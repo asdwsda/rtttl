@@ -1,0 +1,2 @@
+class InvalidNote(Exception):
+    pass
