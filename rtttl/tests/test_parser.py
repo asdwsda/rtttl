@@ -1,6 +1,6 @@
 import unittest
-from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note
-from rtttl.exceptions import InvalidNote
+from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note, parse_defaults
+from rtttl.exceptions import InvalidDefaults, InvalidNote
 
 class ParserTest(unittest.TestCase):
 
@@ -43,6 +43,32 @@ class ParserTest(unittest.TestCase):
         cases = ['', 'j', '66f#', '324g', 'f32', 'a.3', 'krtek', '#', 'a9', '16hb', '4f#6f']
         for case in cases:
             self.assertRaises(InvalidNote, parse_note, case)
+
+    def test_parsing_valid_defaults(self):
+        cases = [
+            {'defaults': '', 'expected': {'duration': 4, 'octave': 6, 'bpm': 63}},
+            {'defaults': 'd=4,o=6,b=63', 'expected': {'duration': 4, 'octave': 6, 'bpm': 63}},
+            {'defaults': 'd=16,o=5,b=900', 'expected': {'duration': 16, 'octave': 5, 'bpm': 900}},
+        ]
+
+        for case in cases:
+            self.assertDictEqual(parse_defaults(case['defaults']), case['expected'])
+
+
+    def test_parsing_invalid_defaults(self):
+        cases = [
+            'd=4,o=6,b=0',
+            'd=4,o=0,b=63',
+            'd=0,o=6,b=63',
+            'o=0,d=6,b=63',
+            'd=0,o=6,b=63,o=7',
+            'd=0,o=6,b=63,c=7',
+            'd=0,o=6,c=63',
+            'd=0,b=63',
+        ]
+
+        for case in cases:
+            self.assertRaises(InvalidDefaults, parse_defaults, case)
 
 if __name__ == 'main':
     unittest.main()
