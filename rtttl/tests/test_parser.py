@@ -38,7 +38,6 @@ class ParserTest(unittest.TestCase):
         for case in cases:
             self.assertDictEqual(parse_note(case['note']), case['expected'])
 
-
     def test_parsing_invalid_notes(self):
         cases = ['', 'j', '66f#', '324g', 'f32', 'a.3', 'krtek', '#', 'a9', '16hb', '4f#6f']
         for case in cases:
@@ -53,7 +52,6 @@ class ParserTest(unittest.TestCase):
 
         for case in cases:
             self.assertDictEqual(parse_defaults(case['defaults']), case['expected'])
-
 
     def test_parsing_invalid_defaults(self):
         cases = [
