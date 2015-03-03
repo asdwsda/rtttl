@@ -1,5 +1,5 @@
 import unittest
-from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note, parse_defaults
+from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note, parse_defaults, convert_note
 from rtttl.exceptions import InvalidDefaults, InvalidNote
 
 class ParserTest(unittest.TestCase):
@@ -67,6 +67,38 @@ class ParserTest(unittest.TestCase):
 
         for case in cases:
             self.assertRaises(InvalidDefaults, parse_defaults, case)
+
+    def test_note_conversion(self):
+        defaults = {'duration': 4, 'octave': 6, 'bpm': 63}
+        cases = [
+            {'note': {'duration': 8, 'pitch': 'f#', 'octave': 5, 'dot': False},
+             'expected': {'duration': 476.19, 'frequency': 740.0}},
+
+            {'note': {'duration': 32, 'pitch': 'd', 'octave': 7, 'dot': False},
+             'expected':  {'duration': 119.048, 'frequency': 2349.6}},
+
+            {'note': {'duration': 8, 'pitch': 'p', 'octave': None, 'dot': False},
+             'expected': {'duration': 476.19, 'frequency': 0}},
+
+            {'note': {'duration': 16, 'pitch': 'c', 'octave': None, 'dot': True},
+             'expected': {'duration': 357.143, 'frequency': 1046.4}},
+
+            {'note': {'duration': None, 'pitch': 'c#', 'octave': None, 'dot': False},
+             'expected': {'duration': 952.381, 'frequency': 1108.8}},
+
+            {'note': {'duration': None, 'pitch': 'b', 'octave': 5, 'dot': False},
+             'expected': {'duration': 952.381, 'frequency': 987.8}},
+
+            {'note': {'duration': None, 'pitch': 'd', 'octave': None, 'dot': True},
+             'expected': {'duration': 1428.571, 'frequency': 1174.8}},
+
+            {'note': {'duration': 8, 'pitch': 'd#', 'octave': 6, 'dot': True},
+             'expected': {'duration': 714.286, 'frequency': 1244.4}},
+        ]
+
+        for case in cases:
+            parsed = convert_note(case['note'], defaults)
+            self.assertDictEqual(parsed, case['expected'])
 
 if __name__ == 'main':
     unittest.main()

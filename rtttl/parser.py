@@ -79,3 +79,35 @@ def parse_element(element, allowed):
 
 def has_dot(dot):
     return dot == '.'
+
+
+def convert_note(note, defaults):
+    octave_multiplier = {4: 1, 5: 2, 6: 4, 7: 8}
+    pitch_frequencies = {
+       'p' : 0,
+       'c' : 261.6,
+       'c#': 277.2,
+       'd' : 293.7,
+       'd#': 311.1,
+       'e' : 329.6,
+       'f' : 349.2,
+       'f#': 370.0,
+       'g' : 392.0,
+       'g#': 415.3,
+       'a' : 440.0,
+       'a#': 466.2,
+       'b' : 493.9,
+       'h' : 493.9
+    }
+
+    msec_per_beat = (60.0 / defaults['bpm']) * 4 * 1000
+    frequency = pitch_frequencies[note['pitch']] * octave_multiplier[note['octave'] or defaults['octave']]
+
+    if note['dot']:
+        multiplier = 1.5
+    else:
+        multiplier = 1
+
+    duration = round((msec_per_beat / (note['duration'] or defaults['duration'])) * multiplier, 3)
+
+    return {'frequency': frequency, 'duration': duration}
