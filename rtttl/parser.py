@@ -13,7 +13,7 @@ def parse_rtttl(rtttl_str, strict_note_syntax=False):
         raise InvalidRTTTLFormat()
 
     defaults = parse_defaults(remove_whitespaces(rtttl_parts[1]))
-    parsed_notes =  parse_notes(remove_whitespaces(rtttl_parts[2]).lower(), strict_note_syntax)
+    parsed_notes = parse_notes(remove_whitespaces(rtttl_parts[2]).lower(), strict_note_syntax)
 
     converted_notes = [convert_note(note, defaults) for note in parsed_notes]
 
@@ -41,7 +41,7 @@ def parse_defaults(defaults_str):
 
 
 def parse_notes(notes, strict_note_syntax):
-    raw_notes =  notes.split(',')
+    raw_notes = notes.split(',')
 
     if not strict_note_syntax:
         raw_notes = [correct_note_syntax(note) for note in raw_notes]
@@ -107,20 +107,20 @@ def has_dot(dot):
 def convert_note(note, defaults):
     octave_multiplier = {4: 1, 5: 2, 6: 4, 7: 8}
     pitch_frequencies = {
-       'p' : 0,
-       'c' : 261.6,
-       'c#': 277.2,
-       'd' : 293.7,
-       'd#': 311.1,
-       'e' : 329.6,
-       'f' : 349.2,
-       'f#': 370.0,
-       'g' : 392.0,
-       'g#': 415.3,
-       'a' : 440.0,
-       'a#': 466.2,
-       'b' : 493.9,
-       'h' : 493.9
+        'p':  0,
+        'c':  261.6,
+        'c#': 277.2,
+        'd':  293.7,
+        'd#': 311.1,
+        'e':  329.6,
+        'f':  349.2,
+        'f#': 370.0,
+        'g':  392.0,
+        'g#': 415.3,
+        'a':  440.0,
+        'a#': 466.2,
+        'b':  493.9,
+        'h':  493.9
     }
 
     msec_per_beat = (60.0 / defaults['bpm']) * 4 * 1000
