@@ -159,6 +159,3 @@ class ParserTest(unittest.TestCase):
 
         for case in cases:
             self.assertRaises(InvalidRTTTLFormat, parse_rtttl, case)
-
-if __name__ == 'main':
-    unittest.main()
