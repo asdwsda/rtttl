@@ -1,6 +1,6 @@
 import unittest
-from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note, parse_defaults, convert_note
-from rtttl.exceptions import InvalidDefaults, InvalidNote
+from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note, parse_defaults, parse_rtttl, convert_note
+from rtttl.exceptions import InvalidDefaults, InvalidNote, InvalidRTTTLFormat
 
 class ParserTest(unittest.TestCase):
 
@@ -99,6 +99,66 @@ class ParserTest(unittest.TestCase):
         for case in cases:
             parsed = convert_note(case['note'], defaults)
             self.assertDictEqual(parsed, case['expected'])
+
+    def test_parsing_valid_rtttl_with_whitespaces(self):
+        barbie_girl_with_whitespaces = ('Barbie Girl:d=8, o=5, b=125:g#, e, g#, c#6, 4a, 4p, f#, d#, f#, b, 4g#, '
+                                        'f#, e, 4p, e, c#, 4f#, 4c#, 4p, f#, e, 4g#, 4f#')
+
+        expected = {'title': 'Barbie Girl',
+                    'notes': [{'duration': 240.0, 'frequency': 830.6},
+                              {'duration': 240.0, 'frequency': 659.2},
+                              {'duration': 240.0, 'frequency': 830.6},
+                              {'duration': 240.0, 'frequency': 1108.8},
+                              {'duration': 480.0, 'frequency': 880.0},
+                              {'duration': 480.0, 'frequency': 0},
+                              {'duration': 240.0, 'frequency': 740.0},
+                              {'duration': 240.0, 'frequency': 622.2},
+                              {'duration': 240.0, 'frequency': 740.0},
+                              {'duration': 240.0, 'frequency': 987.8},
+                              {'duration': 480.0, 'frequency': 830.6},
+                              {'duration': 240.0, 'frequency': 740.0},
+                              {'duration': 240.0, 'frequency': 659.2},
+                              {'duration': 480.0, 'frequency': 0},
+                              {'duration': 240.0, 'frequency': 659.2},
+                              {'duration': 240.0, 'frequency': 554.4},
+                              {'duration': 480.0, 'frequency': 740.0},
+                              {'duration': 480.0, 'frequency': 554.4},
+                              {'duration': 480.0, 'frequency': 0},
+                              {'duration': 240.0, 'frequency': 740.0},
+                              {'duration': 240.0, 'frequency': 659.2},
+                              {'duration': 480.0, 'frequency': 830.6},
+                              {'duration': 480.0, 'frequency': 740.0}]}
+        self.assertDictEqual(parse_rtttl(barbie_girl_with_whitespaces), expected)
+
+    def test_parsing_rtttl_with_non_strict_note_syntax(self):
+        rtttl = 'Test:d=4,o=5,b=90:F#6.,8F#.6,f#'
+
+        expected = {'title': 'Test',
+                    'notes': [{'duration': 1000.0, 'frequency': 1480.0},
+                              {'duration': 500.0, 'frequency': 1480.0},
+                              {'duration': 666.667, 'frequency': 740.0}]}
+
+    def test_parsing_rtttl_with_strict_note_syntax(self):
+        valid_rtttl = 'Valid:d=4,o=5,b=90:F#6.,8F#6.,f#'
+        invalid_rtttl = 'Invalid:d=4,o=5,b=90:F#6.,8F#.6,f#'
+
+        expected = {'title': 'Valid',
+                    'notes': [{'duration': 1000.0, 'frequency': 1480.0},
+                              {'duration': 500.0, 'frequency': 1480.0},
+                              {'duration': 666.667, 'frequency': 740.0}]}
+
+        self.assertDictEqual(parse_rtttl(valid_rtttl, strict_note_syntax=True), expected)
+        self.assertRaises(InvalidNote, parse_rtttl, invalid_rtttl, True)
+
+    def test_parsing_invalid_rtttl(self):
+        cases = [
+            'title;d=8,o=5,b=125;g#,e,g',
+            'title;g#,e,g',
+            'title:d=8,o=5,b=125:g#,e,g:foo',
+        ]
+
+        for case in cases:
+            self.assertRaises(InvalidRTTTLFormat, parse_rtttl, case)
 
 if __name__ == 'main':
     unittest.main()

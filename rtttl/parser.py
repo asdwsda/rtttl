@@ -1,9 +1,23 @@
 import re
-from rtttl.exceptions import InvalidDefaults, InvalidNote, InvalidElement
+from rtttl.exceptions import InvalidDefaults, InvalidNote, InvalidElement, InvalidRTTTLFormat
 
 
 def remove_whitespaces(string):
     return ''.join(string.split())
+
+
+def parse_rtttl(rtttl_str, strict_note_syntax=False):
+    rtttl_parts = rtttl_str.split(':')
+
+    if len(rtttl_parts) != 3:
+        raise InvalidRTTTLFormat()
+
+    defaults = parse_defaults(remove_whitespaces(rtttl_parts[1]))
+    parsed_notes =  parse_notes(remove_whitespaces(rtttl_parts[2]).lower(), strict_note_syntax)
+
+    converted_notes = [convert_note(note, defaults) for note in parsed_notes]
+
+    return {'title': rtttl_parts[0], 'notes': converted_notes}
 
 
 def parse_defaults(defaults_str):
@@ -24,6 +38,15 @@ def parse_defaults(defaults_str):
         raise InvalidDefaults()
 
     return parsed_defaults
+
+
+def parse_notes(notes, strict_note_syntax):
+    raw_notes =  notes.split(',')
+
+    if not strict_note_syntax:
+        raw_notes = [correct_note_syntax(note) for note in raw_notes]
+
+    return [parse_note(note) for note in raw_notes]
 
 
 def correct_note_syntax(note):

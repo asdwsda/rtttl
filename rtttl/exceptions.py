@@ -8,3 +8,7 @@ class InvalidNote(Exception):
 
 class InvalidDefaults(Exception):
     pass
+
+
+class InvalidRTTTLFormat(Exception):
+    pass
