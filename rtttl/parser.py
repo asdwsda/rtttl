@@ -7,6 +7,32 @@ def remove_whitespaces(string):
 
 
 def parse_rtttl(rtttl_str, strict_note_syntax=False):
+    """Parse RTTTL ringtone
+
+    Args:
+        rtttl_str (str): RTTTL string to parse
+        strict_note_syntax (bool): Some RTTTL generator doesn't strictly follow
+            the RTTTL specification and generates a form like
+                <note> := [<duration>] <note> [<dot>] [<octave>] <delimiter>
+            instead of
+                <note> := [<duration>] <note> [<octave>] [<dot>] <delimiter>
+            parse_rtttl accepts both forms by default, but it can be set to
+            accept valid rtttl notes only.
+
+    Returns:
+        A dict containing the ringtone title and notes as frequency, duration pairs.
+        For example:
+
+        {'notes': [{'duration': 952.381 , 'frequency': 1396.8},
+                   {'duration': 178.571,  'frequency': 1661.2},
+                   {'duration': 1904.762, 'frequency': 0},
+                   {'duration': 952.381,  'frequency': 1975.6}],
+         'title': 'Example ringtone'}
+
+    Raises:
+        InvalidRTTTLFormat, InvalidDefaults, InvalidNote
+    """
+
     rtttl_parts = rtttl_str.split(':')
 
     if len(rtttl_parts) != 3:
