@@ -13,7 +13,7 @@ def parse_rtttl(rtttl_str, strict_note_syntax=False):
         raise InvalidRTTTLFormat()
 
     defaults = parse_defaults(remove_whitespaces(rtttl_parts[1]))
-    parsed_notes = parse_notes(remove_whitespaces(rtttl_parts[2]).lower(), strict_note_syntax)
+    parsed_notes = parse_data(remove_whitespaces(rtttl_parts[2]).lower(), strict_note_syntax)
 
     converted_notes = [convert_note(note, defaults) for note in parsed_notes]
 
@@ -40,7 +40,7 @@ def parse_defaults(defaults_str):
     return parsed_defaults
 
 
-def parse_notes(notes, strict_note_syntax):
+def parse_data(notes, strict_note_syntax):
     raw_notes = notes.split(',')
 
     if not strict_note_syntax:
