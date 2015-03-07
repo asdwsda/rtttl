@@ -1,5 +1,19 @@
 # RTTTL
-Ring Tone Text Transfer Language (RTTTL) parser for python
+Nokia Ring Tone Text Transfer Language (RTTTL) parser for python
+
+## Installation
+
+Install via [pip](http://www.pip-installer.org/en/latest/index.html):
+```bash
+$ pip install rtttl
+```
+
+Install from source:
+```bash
+$ git clone https://github.com/asdwsda/rtttl.git
+$ cd rtttl
+$ python setup.py install
+```
 
 ## Usage
 ```python
