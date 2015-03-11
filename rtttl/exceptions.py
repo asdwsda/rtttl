@@ -1,14 +1,14 @@
-class InvalidElement(Exception):
+class InvalidElementError(Exception):
     pass
 
 
-class InvalidNote(Exception):
+class InvalidNoteError(Exception):
     pass
 
 
-class InvalidDefaults(Exception):
+class InvalidDefaultsError(Exception):
     pass
 
 
-class InvalidRTTTLFormat(Exception):
+class InvalidRTTTLFormatError(Exception):
     pass

@@ -1,6 +1,6 @@
 import unittest
 from rtttl.parser import remove_whitespaces, correct_note_syntax, parse_note, parse_defaults, parse_rtttl, convert_note
-from rtttl.exceptions import InvalidDefaults, InvalidNote, InvalidRTTTLFormat
+from rtttl.exceptions import InvalidDefaultsError, InvalidNoteError, InvalidRTTTLFormatError
 
 class ParserTest(unittest.TestCase):
 
@@ -41,7 +41,7 @@ class ParserTest(unittest.TestCase):
     def test_parsing_invalid_notes(self):
         cases = ['', 'j', '66f#', '324g', 'f32', 'a.3', 'krtek', '#', 'a9', '16hb', '4f#6f']
         for case in cases:
-            self.assertRaises(InvalidNote, parse_note, case)
+            self.assertRaises(InvalidNoteError, parse_note, case)
 
     def test_parsing_valid_defaults(self):
         cases = [
@@ -66,7 +66,7 @@ class ParserTest(unittest.TestCase):
         ]
 
         for case in cases:
-            self.assertRaises(InvalidDefaults, parse_defaults, case)
+            self.assertRaises(InvalidDefaultsError, parse_defaults, case)
 
     def test_note_conversion(self):
         defaults = {'duration': 4, 'octave': 6, 'bpm': 63}
@@ -148,7 +148,7 @@ class ParserTest(unittest.TestCase):
                               {'duration': 666.667, 'frequency': 740.0}]}
 
         self.assertDictEqual(parse_rtttl(valid_rtttl, strict_note_syntax=True), expected)
-        self.assertRaises(InvalidNote, parse_rtttl, invalid_rtttl, True)
+        self.assertRaises(InvalidNoteError, parse_rtttl, invalid_rtttl, True)
 
     def test_parsing_invalid_rtttl(self):
         cases = [
@@ -158,4 +158,4 @@ class ParserTest(unittest.TestCase):
         ]
 
         for case in cases:
-            self.assertRaises(InvalidRTTTLFormat, parse_rtttl, case)
+            self.assertRaises(InvalidRTTTLFormatError, parse_rtttl, case)

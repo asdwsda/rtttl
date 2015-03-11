@@ -1,5 +1,5 @@
 import re
-from rtttl.exceptions import InvalidDefaults, InvalidElement, InvalidNote, InvalidRTTTLFormat
+from rtttl.exceptions import InvalidDefaultsError, InvalidElementError, InvalidNoteError, InvalidRTTTLFormatError
 
 
 def remove_whitespaces(string):
@@ -30,16 +30,16 @@ def parse_rtttl(rtttl_str, strict_note_syntax=False):
          'title': 'Example ringtone'}
 
     Raises:
-        InvalidRTTTLFormat, InvalidDefaults, InvalidNote
+        InvalidRTTTLFormatError, InvalidDefaultsError, InvalidNoteError
     """
 
     rtttl_parts = rtttl_str.split(':')
 
     if len(rtttl_parts) != 3:
-        raise InvalidRTTTLFormat('RTTTL string should contain title, defaults and data part, separated by colon')
+        raise InvalidRTTTLFormatError('RTTTL string should contain title, defaults and data part, separated by colon')
 
     if len(rtttl_parts[2]) == 0:
-        raise InvalidRTTTLFormat('Data part cannot be empty')
+        raise InvalidRTTTLFormatError('Data part cannot be empty')
 
 
     defaults = parse_defaults(remove_whitespaces(rtttl_parts[1]))
@@ -63,9 +63,9 @@ def parse_defaults(defaults_str):
                 'bpm': parse_bpm(defaults['b'])
                 }
         else:
-            raise InvalidDefaults('Invalid defaults section format')
-    except InvalidElement as element:
-        raise InvalidDefaults('%s in %s' % (element.message, defaults_str))
+            raise InvalidDefaultsError('Invalid defaults section format')
+    except InvalidElementError as element:
+        raise InvalidDefaultsError('%s in %s' % (element.message, defaults_str))
 
     return parsed_defaults
 
@@ -88,10 +88,10 @@ def parse_note(note_str):
         elements = re.findall(r'^(\d{0,2})([pbeh]|[cdfga]#?)(\d?)(\.?)$', note_str)[0]
         funcs = (parse_duration, parse_pitch, parse_octave, has_dot)
         elements = [func(element) for func, element in zip(funcs, elements)]
-    except InvalidElement as element:
-        raise InvalidNote(' %s in note %s' % (element.message, note_str))
+    except InvalidElementError as element:
+        raise InvalidNoteError(' %s in note %s' % (element.message, note_str))
     except IndexError:
-        raise InvalidNote('Invalid note: %s' % note_str)
+        raise InvalidNoteError('Invalid note: %s' % note_str)
     keys = ('duration', 'pitch', 'octave', 'dot')
     return dict(zip(keys, elements))
 
@@ -129,7 +129,7 @@ def parse_element(element, allowed):
     if element in allowed:
         return element
     else:
-        raise InvalidElement('Element \'%s\' is not allowed' % element)
+        raise InvalidElementError('Element \'%s\' is not allowed' % element)
 
 
 def has_dot(dot):
